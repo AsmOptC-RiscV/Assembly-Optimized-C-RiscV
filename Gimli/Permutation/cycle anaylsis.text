@@ -1,0 +1,21 @@
+2124 cycles total.
+
+62 from loads and stores
+1836 cycles from the permutation (unrolled)
+
+Left 226 cycles comes from the loop implementation:
+
+2 cycles to load the 0x9e377901 constant
+4 cycles to load the constants 1 2 3 24 (1, 2, 3 are used in comparisons)
+-1 per round = 24 cycles
+&3 per round = 24 cycles
+beq 0 = 24 cycles
+beq 1 = 24 cycles
+beq 3 = 18 cycles
+beq 2 = 12 cycles
+swaps are implemented with 3 xor each. thus 6 x 12 cycles
+jump = 12 cycles
+2+4+24+24+24+24+18+12+(6×12)+12 = 216
+10 cycles left
+
+no clue.

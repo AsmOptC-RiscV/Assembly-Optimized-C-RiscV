@@ -1,0 +1,1 @@
+int crypto_hash_ref(unsigned char *out, const unsigned char *in, unsigned long long inlen);

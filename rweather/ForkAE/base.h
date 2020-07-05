@@ -1,0 +1,20 @@
+#pragma once
+
+// #define ADDITIONAL
+#define NO_CHECK
+
+#include "kat.h"
+#include "src/forkae.h"
+
+#define crypto_aead_encrypt forkae_paef_64_192_aead_encrypt
+#define crypto_aead_decrypt forkae_paef_64_192_aead_decrypt
+#define crypto_aead_encrypt_2 forkae_paef_128_192_aead_encrypt
+#define crypto_aead_decrypt_2 forkae_paef_128_192_aead_decrypt
+#define crypto_aead_encrypt_3 forkae_paef_128_256_aead_encrypt
+#define crypto_aead_decrypt_3 forkae_paef_128_256_aead_decrypt
+#define crypto_aead_encrypt_4 forkae_paef_128_288_aead_encrypt
+#define crypto_aead_decrypt_4 forkae_paef_128_288_aead_decrypt
+#define crypto_aead_encrypt_5 forkae_saef_128_192_aead_encrypt
+#define crypto_aead_decrypt_5 forkae_saef_128_192_aead_decrypt
+#define crypto_aead_encrypt_6 forkae_saef_128_256_aead_encrypt
+#define crypto_aead_decrypt_6 forkae_saef_128_256_aead_decrypt

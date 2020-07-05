@@ -1,0 +1,32 @@
+*.elf
+*.o
+.vscode
+*.a
+__pycache__
+*.idea
+**/NIST
+*.dump
+*.log
+!bench.log
+-*
+scheme.h
+/Makefile
+/custom-build.sh
+
+# Compilation files for verilator/vexriscv/openocd/GDB
+main.bin
+main.elf
+main.hex
+mainOVPmain
+main
+
+#created by GDB
+core
+
+.gdb_history
+
+target/
+result*
+
+rweather/**/src
+collection.bib.bck

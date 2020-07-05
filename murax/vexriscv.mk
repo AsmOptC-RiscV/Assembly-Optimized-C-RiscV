@@ -1,0 +1,34 @@
+# RISCV_ARCH ?= rv32im
+# RISCV_ABI ?= ilp32
+# RISCV_CMODEL ?= medany
+# RISCV_ARCHFLAGS += -march=$(RISCV_ARCH)
+# RISCV_ARCHFLAGS += -mabi=$(RISCV_ABI)
+# RISCV_ARCHFLAGS += -mcmodel=$(RISCV_CMODEL)
+
+# # C Flags that must be used for the Murax SoC
+# # VEXRISCV_CFLAGS += $(RISCV_ARCHFLAGS)
+# # VEXRISCV_CFLAGS += -fstrict-volatile-bitfields
+# # VEXRISCV_CFLAGS += --specs=nano.specs --specs=nosys.specs
+
+# VEXRISCV_PLATFORM ?= pqvexriscvsim
+# PLATFORM=$(VEXRISCV_PLATFORM)
+
+# PLATFORM_BSP_DIR := $(dir $(lastword $(MAKEFILE_LIST)))bsp/vexriscv
+
+# # VEXRISCV_LINKERSCRIPT = $(PLATFORM_BSP_DIR)/$(VEXRISCV_PLATFORM).ld
+# VEXRISCV_LINKERSCRIPT = $(VEXRISCV_PLATFORM).ld
+# # LD Flags that must be used to link executables for the Murax SoC
+# VEXRISCV_LDFLAGS += $(RISCV_ARCHFLAGS)
+# VEXRISCV_LDFLAGS += --specs=nosys.specs
+# VEXRISCV_LDFLAGS += -Wl,-T$(VEXRISCV_LINKERSCRIPT)
+# VEXRISCV_LDFLAGS += -nostartfiles -ffreestanding -Wl,--gc-sections
+# # VEXRISCV_LDFLAGS += -L$(PLATFORM_BSP_DIR)
+# VEXRISCV_LDFLAGS += -L.
+# VEXRISCV_LDFLAGS += -Wl,--start-group -l$(VEXRISCV_PLATFORM)bsp -lc -Wl,--end-group
+
+# PLATFORM_CFLAGS = $(VEXRISCV_CFLAGS) -DVEXRISCV_PLATFORM=$(VEXRISCV_PLATFORM)
+# PLATFORM_LDFLAGS = $(VEXRISCV_LDFLAGS)
+# # PLATFORM_LINKDEP = $(PLATFORM_BSP_DIR)/lib$(VEXRISCV_PLATFORM)bsp.a $(VEXRISCV_LINKERSCRIPT)
+
+# # $(PLATFORM_LINKDEP):
+# # 	make -C $(PLATFORM_BSP_DIR) PLATFORM=$(VEXRISCV_PLATFORM)

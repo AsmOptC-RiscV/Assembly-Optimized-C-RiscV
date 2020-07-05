@@ -1,0 +1,1 @@
+murax/bsp/vexriscv/nonvolatile.ld

@@ -1,0 +1,26 @@
+[submodule "Building_Tools/openocd_riscv"]
+	path = Building_Tools/openocd_riscv
+	url = https://github.com/SpinalHDL/openocd_riscv
+    ignore = dirty
+[submodule "Building_Tools/verilator"]
+	path = Building_Tools/verilator
+	url = https://git.veripool.org/git/verilator
+    ignore = dirty
+[submodule "Building_Tools/pqriscv-vexriscv"]
+	path = Building_Tools/pqriscv-vexriscv
+	url = https://github.com/mupq/pqriscv-vexriscv
+    ignore = dirty
+[submodule "Building_Tools/riscv-gnu-toolchain"]
+	path = Building_Tools/riscv-gnu-toolchain
+	url = https://github.com/sifive/riscv-gnu-toolchain
+	ignore = dirty
+[submodule "Building_Tools/riscv-openocd"]
+	path = Building_Tools/riscv-openocd
+	url = https://github.com/sifive/riscv-openocd
+    ignore = dirty
+[submodule "rweather-repo"]
+	path = rweather-repo
+	url = https://github.com/rweather/lightweight-crypto
+[submodule "riscvOVPsim"]
+	path = riscvOVPsim
+	url = https://github.com/riscv/riscv-ovpsim

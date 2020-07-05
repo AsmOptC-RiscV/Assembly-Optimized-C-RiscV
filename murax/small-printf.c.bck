@@ -1,0 +1,234 @@
+///////////////////////////////////////////////////////////////////////////////
+// \author (c) Marco Paland (info@paland.com)
+//             2014-2019, PALANDesign Hannover, Germany
+//
+// \license The MIT License (MIT)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+// \brief Tiny printf, sprintf and (v)snprintf implementation, optimized for speed on
+//        embedded systems with a very limited resources. These routines are thread
+//        safe and reentrant!
+//        Use this instead of the bloated standard/newlib printf cause these use
+//        malloc for printf (and may not be thread safe).
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "printf.h"
+
+
+// define this globally (e.g. gcc -DPRINTF_INCLUDE_CONFIG_H ...) to include the
+// printf_config.h header file
+// default: undefined
+#ifdef PRINTF_INCLUDE_CONFIG_H
+#include "printf_config.h"
+#endif
+
+
+// 'ntoa' conversion buffer size, this must be big enough to hold one converted
+// numeric number including padded zeros (dynamically created on stack)
+// default: 32 byte
+#ifndef PRINTF_NTOA_BUFFER_SIZE
+#define PRINTF_NTOA_BUFFER_SIZE    32U
+#endif
+
+// 'ftoa' conversion buffer size, this must be big enough to hold one converted
+// float number including padded zeros (dynamically created on stack)
+// default: 32 byte
+#ifndef PRINTF_FTOA_BUFFER_SIZE
+#define PRINTF_FTOA_BUFFER_SIZE    32U
+#endif
+
+// support for the floating point type (%f)
+// default: activated
+#ifndef PRINTF_DISABLE_SUPPORT_FLOAT
+#define PRINTF_SUPPORT_FLOAT
+#endif
+
+// support for exponential floating point notation (%e/%g)
+// default: activated
+#ifndef PRINTF_DISABLE_SUPPORT_EXPONENTIAL
+#define PRINTF_SUPPORT_EXPONENTIAL
+#endif
+
+// define the default floating point precision
+// default: 6 digits
+#ifndef PRINTF_DEFAULT_FLOAT_PRECISION
+#define PRINTF_DEFAULT_FLOAT_PRECISION  6U
+#endif
+
+// define the largest float suitable to print with %f
+// default: 1e9
+#ifndef PRINTF_MAX_FLOAT
+#define PRINTF_MAX_FLOAT  1e9
+#endif
+
+// support for the long long types (%llu or %p)
+// default: activated
+#ifndef PRINTF_DISABLE_SUPPORT_LONG_LONG
+#define PRINTF_SUPPORT_LONG_LONG
+#endif
+
+// support for the ptrdiff_t type (%t)
+// ptrdiff_t is normally defined in <stddef.h> as long or long long type
+// default: activated
+#ifndef PRINTF_DISABLE_SUPPORT_PTRDIFF_T
+#define PRINTF_SUPPORT_PTRDIFF_T
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+
+// internal flag definitions
+#define FLAGS_ZEROPAD   (1U <<  0U)
+#define FLAGS_LEFT      (1U <<  1U)
+#define FLAGS_PLUS      (1U <<  2U)
+#define FLAGS_SPACE     (1U <<  3U)
+#define FLAGS_HASH      (1U <<  4U)
+#define FLAGS_UPPERCASE (1U <<  5U)
+#define FLAGS_CHAR      (1U <<  6U)
+#define FLAGS_SHORT     (1U <<  7U)
+#define FLAGS_LONG      (1U <<  8U)
+#define FLAGS_LONG_LONG (1U <<  9U)
+#define FLAGS_PRECISION (1U << 10U)
+#define FLAGS_ADAPT_EXP (1U << 11U)
+
+static size_t _strlen(const char* str) {
+  size_t len = 0;
+  while (str[len] != 0) {
+    len++;
+  }
+  return len;
+}
+
+static int _putstr(const char* str) {
+  size_t written = 0;
+  while (*str != '\0') {
+    _putchar(*str);
+    written++;
+    str++;
+  }
+  return written;
+}
+
+
+// Sometimes div modulo is not available, we implement one with shift/and/or
+static int divmod(int* Qptr, int* Rptr, const int N, const int D) {
+  if (D == 0) {
+    return -1;
+  }
+
+  int Q = 0;
+  int R = 0;
+  for (int i = 8*sizeof(int) - 1; i >= 0; i--) {
+    R <<= 1;
+    R |= (N >> i) & 0x1;
+    if (R >= D) {
+      R -= D;
+      Q |= 1 << i;
+    }
+  }
+  *Qptr = Q;
+  *Rptr = R;
+  return 0;
+}
+
+// internal vsnprintf
+static int _vsnprintf(const char* format, va_list va)
+{
+  size_t idx = 0, idx2 = 0;
+  size_t written = 0;
+  char* p;
+  int value, q, r;
+  char buf[32];
+
+  while (format[idx]) {
+    if (format[idx] != '%') {
+      _putchar(format[idx]);
+      written++;
+      idx++;
+      continue;
+    }
+
+    idx++;
+    switch (format[idx]) {
+      case '%':
+        _putchar('%');
+        written++;
+        idx++;
+        break;
+      default:
+        idx++;
+        break;
+      case 's':
+        p = va_arg(va, char*);
+        idx++;
+        written += _putstr(p);
+        break;
+      case 'd':
+        value = va_arg(va, int);
+        q = 0, r = 0;
+        idx2 = 0;
+        do {
+          divmod(&q, &r, value, 10);
+          const char digit = (char)(r);
+          buf[idx2++] = '0' + digit;
+          value = q;
+        } while (value != 0 && idx2 < sizeof(buf));
+        while (idx2 > 0) {
+          _putchar(buf[--idx2]);
+          written++;
+        }
+        idx++;
+        break;
+      case 'x':
+      case 'X':
+        value = va_arg(va, int);
+        q = 0, r = 0;
+        idx2 = 0;
+        do {
+          divmod(&q, &r, value, 16);
+          const char digit = (char)(r);
+          buf[idx2++] = digit < 10 ? '0' + digit : 'A' - 10 + digit;
+          value = q;
+        } while (value != 0 && idx2 < sizeof(buf));
+        while (idx2 > 0) {
+          _putchar(buf[--idx2]);
+          written++;
+        }
+        idx++;
+        break;
+    }
+  }
+  return written;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+int printf_(const char* format, ...)
+{
+  va_list va;
+  va_start(va, format);
+  const int ret = _vsnprintf(format, va);
+  va_end(va);
+  return ret;
+}
