@@ -1,5 +1,6 @@
 # Lightweight Crypto on Risc-V
 
+**Paper [here](https://github.com/AsmOptC-RiscV/Assembly-Optimized-C-RiscV/blob/master/paper.pdf)**
 
 ## Installation of the dependencies.
 
