@@ -1,6 +1,16 @@
 # Lightweight Crypto on Risc-V
 
-**Paper [here](https://github.com/AsmOptC-RiscV/Assembly-Optimized-C-RiscV/blob/master/paper.pdf)**
+This repository contains auxiliary material for the paper "Assembly or Optimized C for Lightweight Cryptography on RISC-V?" which was accepted to [CANS 2020](https://cans2020.at/).
+
+Authors
+ - [Fabio Campos](https://www.sopmac.de/) `<campos@sopmac.de>` 
+ - Lars Jellema `<lars.jellema@gmail.com>`
+ - Mauk Lemmen `<m.lemmen@student.ru.nl>`
+ - Lars Müller `<mail@lars-mueller.com>`
+ - [Daan Sprenkels](https://dsprenkels.com/) `<d.sprenkels@cs.ru.nl>` 
+ - [Benoit Viguier](https://benoit.viguier.nl/) `<b.viguier@cs.ru.nl>` 
+
+The paper is available at https://eprint.iacr.org/2020/836.pdf
 
 ## Installation of the dependencies.
 
